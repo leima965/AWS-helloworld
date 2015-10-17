@@ -25,8 +25,43 @@ This script is use to build a HA load-balanced website in AWS using cloudformati
 * It will create a cloudformation stack with AutoScaleGroup,LaunchConfig and ElasticLoadBalancer.
 * In the userdate, it will download the Date from S3 and run the firstrun.sh script to setup the instacnes.
 
-**Validate the website is up running**
+**Validate if the website is up running**
 * It will get the ELB DNS recorde from output of the  autoscaling group cloudformation stack and curl the ELB address.
+
+##usage
+./install.sh \<aws_profile\> \<vpcid\> \<releaseNO\>
+
+##Example Output
+**./install.sh myaws vpc-6428e701 2**
+Checking if securitygroup stack exists...
+++Creating sgstack stack...
+{
+    "StackId": "arn:aws:cloudformation:ap-southeast-2:602147953304:stack/sgstack/4c11ebe0-7529-11e5-8505-5081ed982a6e"
+}
+
+Waiting sgstack to be ready...
+Waiting sgstack to be ready...
+Waiting sgstack to be ready...
+
+upload firstrun files to s3
+make_bucket: s3://helloworld220151018104358/
+upload: ./app.tar to s3://helloworld220151018104358/app.tar
+
+Checking if cert for ELB exists...
+
+helloworld certs already exists
+
+Checking if stack exists...
+++Creating helloworld2 stack...
+{
+    "StackId": "arn:aws:cloudformation:ap-southeast-2:602147953304:stack/helloworld2/87109cf0-7529-11e5-a1ce-50ba2bf5a2a6"
+}
+
+Waiting sgstack to be ready...
+Waiting sgstack to be ready...
+Waiting sgstack to be ready...
+Waiting sgstack to be ready...
+Waiting sgstack to be ready...
 
 
 
