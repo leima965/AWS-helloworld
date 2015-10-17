@@ -1,4 +1,4 @@
-# helloworld
+# HelloWorld
 
 
 ## Description
@@ -7,7 +7,7 @@ This script is use to build a HA load-balanced website in AWS using cloudformati
 ## Prerequisite
 - aws cli.
 - jp pkg installed on your machine.
-- key pair for instances 
+- key pair for instances:pre setup in your asw account with name helloworld or change the key name in cft/asg.json.  
 
 ## How the script works ?
 **security groups setup**
