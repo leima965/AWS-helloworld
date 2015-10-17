@@ -1,0 +1,215 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Autoscale group",
+    
+    "Parameters": {
+        "ResourceSize": {
+            "Default": "t2.micro",
+            "Type": "String"
+        },
+       "MinSize": {
+            "Default": "1",
+            "Type": "String"
+        },
+        "MaxSize": {
+            "Default": "4",
+            "Type": "String"
+        },
+        "Release": {
+            "Default": "1",
+            "Type": "String"
+        },
+
+
+        "SGELB": {
+            "Description": "SecurityGroup for ELB",
+            "Type": "CommaDelimitedList"
+        },
+        "SGWEB": {
+            "Description": "SecurityGroup for Web instance",
+            "Type": "CommaDelimitedList"
+        },
+        "Subnet": {
+            "Type": "CommaDelimitedList"
+        },
+        "KeyName": {
+            "Description": "key name",
+            "Type": "String",
+            "Default": "HelloWorld"
+        },
+        "Env": {
+            "Default": "dev",
+            "Description": "environmet",
+            "Type": "String"
+        },
+        "Product": {
+            "Description": "Tag for Product",
+            "Type": "String"
+        },
+        "ImageId": {
+            "Description": "ami ID",
+            "Type": "String",
+            "Default": "ami-c11856fb"
+        },
+        "S3URL": {
+            "Description": "scripts files for instances",
+            "Type": "String"
+        },
+        "CertARN": {
+            "Description": "scripts files for instances",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "ElasticLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "80",
+                        "Protocol": "HTTP"
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "443",
+                        "Protocol": "HTTPS",
+                        "InstanceProtocol": "HTTPS",
+                        "SSLCertificateId": {
+                            "Ref": "CertARN"
+                        }
+                    }
+                ],
+                "HealthCheck": {
+                    "Target": "TCP:80",
+                    "HealthyThreshold": "3",
+                    "UnhealthyThreshold": "5",
+                    "Interval": "30",
+                    "Timeout": "5"
+                },
+                "SecurityGroups": {
+                    "Ref": "SGELB"
+                }
+            }
+        },
+        "AutoScaleGroup": {
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "LaunchConfigurationName": {
+                    "Ref": "LaunchConfig"
+                },
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "ElasticLoadBalancer"
+                    }
+                ],
+                "MaxSize": 
+                        {
+                            "Ref": "MaxSize"
+                        },
+                    
+                
+                "MinSize": 
+                        {
+                            "Ref": "MinSize"
+                        },
+                    
+                
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "PropagateAtLaunch": true,
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "Product"
+                                    },
+                                    "-",
+                                    {
+                                       "Ref": "Release"
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    
+                    {
+                        "Key": "Product",
+                        "PropagateAtLaunch": true,
+                        "Value": {
+                            "Ref": "Product"
+                        }
+                    }
+                ],
+                "VPCZoneIdentifier": {
+                    "Ref": "Subnet"
+                }
+            },
+            "Type": "AWS::AutoScaling::AutoScalingGroup"
+        },
+        "LaunchConfig": {
+            "Properties": {
+                "ImageId": {
+                    "Ref": "ImageId"
+                },
+                "InstanceType": 
+                        {
+                            "Ref": "ResourceSize"
+                        },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "SecurityGroups": {
+                    "Ref": "SGWEB"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -ex\n",
+                                "wget ",
+                                {
+                                    "Ref": "S3URL"
+                                },
+                                "\n",
+                                "cp app.tar /home/ec2-user\n",
+                                "cd /home/ec2-user\n",
+                                "tar -xf /home/ec2-user/app.tar\n",
+                                "chown -R ec2-user:ec2-user /home/ec2-user\n",
+                                "chmod +x /home/ec2-user/app/firstrun.sh\n",
+                                "/home/ec2-user/app/firstrun.sh ",
+                                {
+                                    "Fn::GetAtt": [
+                                        "ElasticLoadBalancer",
+                                        "DNSName"
+                                    ]
+                                },
+                                "\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "Type": "AWS::AutoScaling::LaunchConfiguration"
+        }
+    },
+    "Outputs": {
+        "ELBDNSNAME": {
+            "Description": "DNSNAME for the website",
+            "Value": {
+                "Fn::GetAtt": [
+                    "ElasticLoadBalancer",
+                    "DNSName"
+                ]
+            }
+        }
+    }
+}
