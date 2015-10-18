@@ -2,7 +2,7 @@
 
 
 ## Description
-This script is use to build a HA load-balanced website in AWS using cloudformation.
+This script is used to build a HA load-balanced website in AWS using cloudformation.
 
 ## Prerequisite
 - aws cli.
@@ -18,8 +18,8 @@ This script is use to build a HA load-balanced website in AWS using cloudformati
 **Upload data to S3**
 * It will upload the firstrun script and config files in app directory to S3
 
-**Upload certification for ELB**
-* It will upload the certification to iam if it's not exsting
+**Upload certificate for ELB**
+* It will upload the certificate to iam if it's not exsting
 
 **Create the autoscalling group stack**
 * It will create a cloudformation stack with AutoScaleGroup,LaunchConfig and ElasticLoadBalancer.
