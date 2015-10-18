@@ -31,6 +31,13 @@ This script is use to build a HA load-balanced website in AWS using cloudformati
 ##usage
 ./install.sh \<aws_profile\> \<vpcid\> \<releaseNO\>
 
+## To Do List 
+* Add instance role in the stack to access s3 buket
+* Add auto scaling up/down based on cloudwatch alerts
+* If I have a domain, add DNS stack to switch DNS between releases.
+* Manange the config files via Puppet
+* Put this script into CI/CD tool like bamboo
+
 ##Example Output
 **./install.sh myaws vpc-6428e701 2**
 
@@ -75,6 +82,8 @@ Waiting asgstack to be ready...
 100    35  100    35    0     0   1166      0 --:--:-- --:--:-- --:--:--  1206
 
 helloworl-ElasticL-WJP8MD5W8I1T-339834726.ap-southeast-2.elb.amazonaws.com is up
+
+
 
 
 
