@@ -70,6 +70,13 @@ Waiting asgstack to be ready...
 Waiting asgstack to be ready...
 Waiting asgstack to be ready...
 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    35  100    35    0     0   1166      0 --:--:-- --:--:-- --:--:--  1206
+
+helloworl-ElasticL-WJP8MD5W8I1T-339834726.ap-southeast-2.elb.amazonaws.com is up
+
+
 
 
 
