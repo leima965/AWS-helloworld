@@ -33,6 +33,7 @@ This script is use to build a HA load-balanced website in AWS using cloudformati
 
 ## To Do List 
 * Add instance role in the stack to access s3 buket
+* Add frond end ELB and revproxy layers for cache and security purpose. 
 * Add auto scaling up/down based on cloudwatch alerts
 * If I have a domain, add DNS stack to switch DNS between releases.
 * Manange the config files via Puppet
