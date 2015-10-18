@@ -45,7 +45,7 @@ ddate=`date +%Y%m%d%H%M%S`
 
 SGELBID=`aws --profile $profile cloudformation describe-stacks --stack-name $sgstackname|jq -r '.Stacks[] .Outputs[] | select(.OutputKey=="SGELBID")' | jq -r .OutputValue`
 SGWEBID=`aws --profile $profile cloudformation describe-stacks --stack-name $sgstackname|jq -r '.Stacks[] .Outputs[] | select(.OutputKey=="SGWEBID")' | jq -r .OutputValue`
-subnet=`aws --profile leima ec2 describe-subnets |grep SubnetId |cut -d \" -f4 |sed 'N;s/\n/,/'`
+subnet=`aws --profile $profile ec2 describe-subnets |grep SubnetId |cut -d \" -f4 |sed 'N;s/\n/,/'`
 SUBNET=`echo [${subnet}]`
 
 function create_asgstack {
@@ -58,14 +58,15 @@ function create_asgstack {
                 echo "$asgstackname stack already exists"
         else
                 echo "++Creating $asgstackname stack..."
-              #  echo "aws --profile $profile cloudformation create-stack --stack-name $asgstackname --template-body file://cft/asg.json --parameters ParameterKey=SGELB,ParameterValue=${SGELBID} ParameterKey=SGWEB,ParameterValue=${SGWEBID} ParameterKey=Subnet,ParameterValue=${subnet} ParameterKey=Product,ParameterValue=${asgstackname}"
+                
+
                 aws --profile $profile cloudformation create-stack --stack-name $asgstackname --template-body file://cft/asg.json --parameters ParameterKey=SGELB,ParameterValue=${SGELBID} ParameterKey=SGWEB,ParameterValue=${SGWEBID} ParameterKey=Subnet,ParameterValue=$SUBNET ParameterKey=Product,ParameterValue=${asgstackname}  ParameterKey=S3URL,ParameterValue=${s3url} ParameterKey=CertARN,ParameterValue=${ARN} ParameterKey=Release,ParameterValue=${release}
                 echo ""
                 n=0
                 m=0
                 while [ $n -eq 0 ]; do
                 n=`aws --profile $profile cloudformation describe-stacks --stack-name $asgstackname | grep -c CREATE_COMPLETE`
-                echo "Waiting $sgstackname to be ready..."
+                echo "Waiting $asgstackname to be ready..."
                 sleep 30
                 let m=$m+30
                 if [ $m -ge 300 ]; then
@@ -102,12 +103,14 @@ ARN=`aws --profile $profile iam get-server-certificate --server-certificate-name
 
 create_asgstack
 
-ELBDNS=`aws --profile $profile cloudformation describe-stacks --stack-name $sgstackname|jq -r '.Stacks[] .Outputs[] | select(.OutputKey=="ELBDNSNAME")' | jq -r .OutputValue`
+ELBDNS=`aws --profile $profile cloudformation describe-stacks --stack-name $asgstackname|jq -r '.Stacks[] .Outputs[] | select(.OutputKey=="ELBDNSNAME")' | jq -r .OutputValue`
 echo ""
-echo "pause the script for 4mins to wait for the instances ready"
+echo "pause the script for 4mins to wait for the DNS ready"
+sleep 4m
 
-weboutput=`curl http://$ELBDNS`
-if [ "$weboutput" == "hello world" ]
+
+weboutput=`curl -k https://$ELBDNS`
+if [[ $weboutput ==  *"Hello World"* ]]
 then
    echo " $ELBDNS is up "
 else

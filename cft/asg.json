@@ -8,7 +8,7 @@
             "Type": "String"
         },
        "MinSize": {
-            "Default": "1",
+            "Default": "2",
             "Type": "String"
         },
         "MaxSize": {
