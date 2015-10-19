@@ -25,7 +25,7 @@ sed -i "s/localhost.key/helloworld.key/g" /etc/httpd/conf.d/ssl.conf
 cp /home/ec2-user/app/files/helloworld.cer /etc/pki/tls/certs/
 cp /home/ec2-user/app/files/helloworld.key /etc/pki/tls/private/
 
-echo "ServerName 127.0.0.1" >> /etc/httpd/conf/httpd.conf
+
 echo "NameVirtualHost *:80"  >> /etc/httpd/conf/httpd.conf
 mkdir -p /var/log/httpd/${ELBDNSNAME}
 #cp  /home/ec2-user/app/files/${product}.conf /etc/httpd/conf.d/
