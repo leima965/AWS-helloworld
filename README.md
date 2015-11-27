@@ -5,8 +5,7 @@
 This script is used to build a HA load-balanced website in AWS using cloudformation.
 
 ## Prerequisite
-- aws cli.
-- jq pkg installed on your machine.
+- aws cli and jq pkg installed on your machine.
 - key pair for instances:pre setup in your asw account with name helloworld or change the key name in cft/asg.json.  
 
 ## How the script works ?
