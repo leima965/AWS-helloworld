@@ -35,7 +35,6 @@ This script is used to build a HA load-balanced website in AWS using cloudformat
 * Add frond end ELB and revproxy layers for cache and security purpose. 
 * Add auto scaling up/down based on cloudwatch alerts
 * If I have a domain, add DNS stack to switch DNS between releases.
-* Manange the config files via Puppet
 * Put this script into CI/CD tool like bamboo
 
 ##Example Output
