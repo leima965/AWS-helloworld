@@ -23,7 +23,7 @@ ddate=`date +%Y%m%d%H%M%S`
                 echo ""
                 echo "$sgstackname stack already exists"
         else
-                echo "++Creating $sgstackname stack..."
+                echo "++Creating $sgstackname stack..."         
                 aws --profile $profile cloudformation create-stack --stack-name $sgstackname --template-body file://cft/sg.json --parameters ParameterKey=VpcId,ParameterValue=${vpcid}
                 echo ""
                 n=0
@@ -46,7 +46,7 @@ ddate=`date +%Y%m%d%H%M%S`
 SGELBID=`aws --profile $profile cloudformation describe-stacks --stack-name $sgstackname|jq -r '.Stacks[] .Outputs[] | select(.OutputKey=="SGELBID")' | jq -r .OutputValue`
 SGWEBID=`aws --profile $profile cloudformation describe-stacks --stack-name $sgstackname|jq -r '.Stacks[] .Outputs[] | select(.OutputKey=="SGWEBID")' | jq -r .OutputValue`
 subnet=`aws --profile $profile ec2 describe-subnets |grep SubnetId |cut -d \" -f4 |sed 'N;s/\n/,/'`
-SUBNET=`echo [${subnet}]`
+SUBNET=`echo \"${subnet}\"`
 
 function create_asgstack {
 # Check if asg stack exists
@@ -106,7 +106,7 @@ create_asgstack
 ELBDNS=`aws --profile $profile cloudformation describe-stacks --stack-name $asgstackname|jq -r '.Stacks[] .Outputs[] | select(.OutputKey=="ELBDNSNAME")' | jq -r .OutputValue`
 echo ""
 echo "pause the script for 4mins to wait for the DNS ready"
-sleep 4m
+sleep 3m
 
 
 weboutput=`curl -k https://$ELBDNS`
